@@ -72,7 +72,11 @@ This project utilizes a Raspberry Pi and an ultrasonic sensor to measure the dis
 
 1. Start the script:
     ```bash
-    python3 trainObjDetection.py
+          mkdir TrainProject && cd TrainProject
+          nano trainObjDetection.py
+          python3 -m venv myenv
+          source myenv/bin/activate
+          python3 trainObjDetection.py
     ```
 
 2. The script will continuously measure the distance, check for cracks, and send the data to ThingSpeak.
