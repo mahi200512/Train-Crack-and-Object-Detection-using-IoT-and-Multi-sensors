@@ -94,3 +94,4 @@ This project utilizes a Raspberry Pi and an ultrasonic sensor to measure the dis
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+![Screenshot 2025-03-06 122654](https://github.com/user-attachments/assets/7a4a9b91-12b9-4330-9129-f0fd7908dbe8)
