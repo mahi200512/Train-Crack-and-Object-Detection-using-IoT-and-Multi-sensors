@@ -128,7 +128,10 @@ Save with Ctrl + O, Enter, and exit with Ctrl + X.
      xlabel('Time');
      ```
    - Save and run to visualize the filtered sensor data.
-
+   - 
+## My Public URL :
+https://thingspeak.mathworks.com/apps/matlab_visualizations/617464 - FOR MATLAB VISUALS
+https://thingspeak.mathworks.com/channels/2884430 - MY THINGSPEAK CHANNEL
 ---
 
 ## License
@@ -136,5 +139,7 @@ Save with Ctrl + O, Enter, and exit with Ctrl + X.
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 <img width="516" alt="image" src="https://github.com/user-attachments/assets/a72d6076-0ab4-4fe1-be3f-69d9b6654927" /> 
 <img width="347" alt="image" src="https://github.com/user-attachments/assets/f5e94588-034d-496a-a2d9-ff2cc3ca9fc6" />
+<img width="805" alt="image" src="https://github.com/user-attachments/assets/51bb8725-751b-433c-bfdc-955b9dca2506" />
+
 
 
