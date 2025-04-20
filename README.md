@@ -6,96 +6,135 @@ This project utilizes a Raspberry Pi and an ultrasonic sensor to measure the dis
 
 ## Components Used
 
-- **Raspberry Pi**: To run the Python code and connect to the sensors.
+- **Raspberry Pi 3**: To run the Python code and connect to the sensors.
 - **Ultrasonic Sensor (HC-SR04)**: To measure the distance.
 - **IR Sensor**: To detect cracks.
+- **ESP 01**: Wireless communication.
+- **Servo Motor**: To rotate ( connected with ultrasonic sensor).
 - **ThingSpeak**: IoT platform to visualize the data.
+- **Buzzer**: To buzz when object detected and is near.
 
 ## Features
 
 - **Distance Measurement**: Uses an ultrasonic sensor to measure the distance between the train's wheels and the track.
 - **Crack Detection**: Uses an IR sensor to detect cracks on the track.
 - **Data Sending**: Sends data to ThingSpeak via MQTT, including the distance and crack detection status.
-
+- **Matlab Analysis**: to reduce noice and visualise and gather useful information.
 ## Hardware Setup and Wiring
 
 ### Raspberry Pi Connections:
 1. **HC-SR04 Ultrasonic Sensor:**
    - **VCC** -> 5V on Raspberry Pi
    - **GND** -> GND on Raspberry Pi
-   - **Trig** -> GPIO Pin (e.g., GPIO17)
-   - **Echo** -> GPIO Pin (e.g., GPIO27)
+   - **Trig** -> GPIO 23
+   - **Echo** -> GPIO 24
 
 2. **HW-201 IR Sensor:**
    - **VCC** -> 5V on Raspberry Pi
    - **GND** -> GND on Raspberry Pi
-   - **OUT** -> GPIO Pin (e.g., GPIO22)
+   - **OUT** -> GPIO 17
 
-3. **GY-61 Accelerometer/Gyroscope:**
-   - **VCC** -> 3.3V on Raspberry Pi
-   - **GND** -> GND on Raspberry Pi
-   - **SDA** -> GPIO Pin (e.g., GPIO2)
-   - **SCL** -> GPIO Pin (e.g., GPIO3)
-
-4. **ESP8266 Wi-Fi Module:**
+3. **ESP01 Wi-Fi Module:**
    - **VCC** -> 3.3V on Raspberry Pi
    - **GND** -> GND on Raspberry Pi
    - **TX** -> RX on Raspberry Pi (GPIO15)
-   - **RX** -> TX on Raspberry Pi (GPIO14)
+   - **EN** -> 3.3V on Raspberry Pi
+   - **RST** -> 3.3V on Raspberry Pi
+   - **RX** -> RX on Raspberry Pi (GPIO14)
 
-5. **Micro Servo Motor (if used):**
-   - **VCC** -> 5V on Raspberry Pi
-   - **GND** -> GND on Raspberry Pi
-   - **Control** -> GPIO Pin (e.g., GPIO18)
+4. **Micro Servo Motor (if used):**
+   - **GND** -> GND on Raspberry Pi (the smaller pin in buzzer)
+   - **Control** -> GPIO 26
 
-## Installation Instructions
+## 🚀 Setup Instructions
 
-### Step 1: Install Dependencies
+1. **Install Raspberry Pi OS:**
+   - Use [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to flash Raspberry Pi OS on the SD card.
 
-1. Ensure your Raspberry Pi is running a supported version of Raspbian.
-2. Clone the repository:
-    ```bash
-    git clone https://github.com/yourusername/TrainProject.git
-    cd TrainProject
-    ```
+2. **Boot & Connect Pi:**
+   - Insert the SD card, power on, and connect to network.
+   - For headless setup:
+     ```bash
+     ssh pi@raspberrypi.local
+     # Default password: raspberry 
+     ```
+     (password is not shown on the screen)
+3. **Create the Python script:**
 
-3. Install the required Python libraries:
-    ```bash
-    sudo apt update
-    sudo apt install python3-pip
-    pip3 install -r requirements.txt
-    ```
+   ```bash
+      nano mainTrain.py
+   ```
+Paste your mainTrain.py code.
+Save with Ctrl + O, Enter, and exit with Ctrl + X.
+4. **Create virtual environment & activate it:**
 
-4. Make sure the GPIO pins are set up correctly in the script (`trainObjDetection.py`).
+   ```bash
+      sudo apt update
+      sudo apt install python3-pip python3-venv
+      python3 -m venv mqtt-env
+      source mqtt-env/bin/activate
+   ```
+4. **Install required libraries:**
 
-### Step 2: Run the Code
+*Create a requirements.txt:*
 
-1. Start the script:
-    ```bash
-          mkdir TrainProject && cd TrainProject
-          nano trainObjDetection.py
-          python3 -m venv myenv
-          source myenv/bin/activate
-          python3 trainObjDetection.py
-    ```
+   ```bash
+      nano requirements.txt
+   ```
+*Add:*
+   ```bash
+      RPi.GPIO
+      paho-mqtt
+      requests
+   ```
+*Then install:*
 
-2. The script will continuously measure the distance, check for cracks, and send the data to ThingSpeak.
+   ```bash
+      pip install -r requirements.txt
+   ```
+5. ** Run the Script **
+   ```bash
+      python3 mainTrain.py
+   ```
 
-### Step 3: Monitor the Data on ThingSpeak
+## 📡 ThingSpeak Setup
 
-1. Go to your ThingSpeak channel dashboard to view the data.
-   - URL: [https://thingspeak.com](https://thingspeak.com)
-   - Channel ID: `2884430` (replace with your own channel ID if necessary).
-   - API Key: Use your ThingSpeak write API key.
+1. **Create a free account** on [ThingSpeak](https://thingspeak.com)
 
-## How It Works
+2. **Create a new channel** and configure it:
+   - **Channel ID:** `enter your channel id` *(replace with your own if necessary)*
+   - **Write API Key:** `enter your write api keys`
 
-- The script first measures the distance using the ultrasonic sensor.
-- It then checks for cracks using the IR sensor.
-- The data (distance and crack detection status) is sent to ThingSpeak via MQTT.
-- The script runs in a loop, continuously measuring and sending data.
+3. **Add 2 fields** under your channel settings:
+   - `Field 1`: Distance (cm)
+   - `Field 2`: Crack Detection Status (1 or 0)
+
+4. **(Optional but Recommended)**: Use **MATLAB Visualization** in ThingSpeak to apply Digital Signal Processing (DSP) filters to clean and smooth raw data.
+
+   - Navigate to **Apps > MATLAB Analysis > New**, then write a filter script like:
+     ```matlab
+     % Read data from channel
+     data = thingSpeakRead({enter your channel id}, 'Fields', [1,2], 'NumPoints', 100);
+     distance = data(:,1);
+     crack = data(:,2);
+
+     % Apply moving average filter to distance
+     smoothedDistance = movmean(distance, 5);
+
+     % Plot
+     plot(smoothedDistance);
+     title('Smoothed Distance using Moving Average');
+     ylabel('Distance (cm)');
+     xlabel('Time');
+     ```
+   - Save and run to visualize the filtered sensor data.
+
+---
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-![Screenshot 2025-03-06 122654](https://github.com/user-attachments/assets/7a4a9b91-12b9-4330-9129-f0fd7908dbe8)
+<img width="516" alt="image" src="https://github.com/user-attachments/assets/a72d6076-0ab4-4fe1-be3f-69d9b6654927" /> 
+<img width="347" alt="image" src="https://github.com/user-attachments/assets/f5e94588-034d-496a-a2d9-ff2cc3ca9fc6" />
+
+
