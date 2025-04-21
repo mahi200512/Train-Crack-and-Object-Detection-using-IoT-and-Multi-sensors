@@ -42,7 +42,7 @@ This project utilizes a Raspberry Pi and an ultrasonic sensor to measure the dis
    - **RST** -> 3.3V on Raspberry Pi
    - **RX** -> RX on Raspberry Pi (GPIO14)
 
-4. **Micro Servo Motor (if used):**
+4. **Buzzer (if used):**
    - **GND** -> GND on Raspberry Pi (the smaller pin in buzzer)
    - **Control** -> GPIO 26
 
